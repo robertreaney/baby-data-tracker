@@ -1,0 +1,12 @@
+version: "3"
+
+services:
+
+  frontend:
+    build: src
+    command: streamlit run app.py
+    ports:
+      - 8501:8501
+    volumes:
+      - ./src:/wd
+      - ./.secrets:/wd/.secrets
