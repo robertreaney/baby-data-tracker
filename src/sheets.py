@@ -100,7 +100,7 @@ class SheetsAPI:
     values = [[group[x].sum() for name, group in nursing.groupby('Adjusted_Date')] for x in qois] 
 
     # append diapers info
-    qois += ['# Diapers']
+    qois += ['Diapers']
     values += [[len(group) for name, group in diapers.groupby('Adjusted_Date')]]
 
     # pop today so it isn't used in mean calculations and record yesterday

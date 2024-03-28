@@ -1,6 +1,4 @@
 import streamlit as st
-import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
 import plotly.express as px
 import plotly.graph_objects as go
 import pandas as pd
@@ -46,12 +44,12 @@ df1 = nursing.groupby('Adjusted_Date').agg({
 df2 = diapers.groupby('Adjusted_Date').agg({'Type': 'count'})
 
 df = pd.merge(df1, df2, on='Adjusted_Date', how='outer')
-df = df.rename(columns={'Minutes': 'Feeding', 'Type': '# Diapers'})
+df = df.rename(columns={'Minutes': 'Feeding', 'Type': 'Diapers'})
 
 # only care about the last week
 df = df[-7:]
 
-fig = px.line(df.reset_index(), x='Adjusted_Date', y=['Feeding', '# Diapers'], title='Food & Poop', color_discrete_sequence=['blue', 'red'])
+fig = px.line(df.reset_index(), x='Adjusted_Date', y=['Feeding', 'Diapers'], title='Food & Poop', color_discrete_sequence=['blue', 'red'])
 
 # Customize the x-axis to show dates in '%m/%d' format and rotate the labels for better readability
 fig.update_xaxes(tickformat='%m/%d', tickangle=45)
@@ -64,16 +62,3 @@ sleep_fig = px.line(df.reset_index(), x='Adjusted_Date', y=['Mom','Dad', 'Margot
 sleep_fig.update_xaxes(tickformat='%m/%d', tickangle=45)
 
 st.plotly_chart(sleep_fig, use_container_width=True)
-
-# post daily means
-
-# st.write('MPL')
-# # here is some nursing data plot
-# fig,ax = plt.subplots()
-# ax.plot(df['Start'], df['Minutes'], label='Minutes/Time')
-# # ax.legend()
-# ax.xaxis.set_major_locator(mdates.DayLocator(interval=1))
-# ax.xaxis.set_major_formatter(mdates.DateFormatter('%m/%d'))
-# ax.tick_params(axis='x', labelrotation=45)
-
-# st.pyplot(fig)
