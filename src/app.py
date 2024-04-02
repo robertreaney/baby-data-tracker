@@ -4,8 +4,9 @@ import plotly.graph_objects as go
 import pandas as pd
 
 from sheets import SheetsAPI
+from visuals import grouped_feeding_info_table, diaper_info_table, grouped_feeding_histogram
 
-DAY_CUTOFF = 8
+DAY_CUTOFF = 10
 
 client = SheetsAPI('.secrets/service.json')
 nursing, diapers = client()
@@ -18,7 +19,7 @@ overview_table_output = client.get_days_metrics(nursing, diapers, DAY_CUTOFF)
 fill_colors = [['white' for _ in range(len(row))] for row in overview_table_output]
 
 # color the today/yesterday column red in a cell if its less than median
-for col in [-1, -2]:
+for col in [-3]:
     for i, value in enumerate(overview_table_output[col]):
         if value < overview_table_output[2][i]:
             fill_colors[col][i] = 'red'
@@ -27,12 +28,19 @@ for col in [-1, -2]:
 
 fig = go.Figure(data=[go.Table(
     header=dict(
-        values=['QoI', 'Avg', 'Median', 'High Score', 'Yesterday', 'Today'], 
+        values=['QoI', 'Avg', 'Median', 'High Score', 'Yesterday', 'Today', 'Expected'], 
         font=dict(size=14)),
     cells=dict(values=overview_table_output,fill=dict(color=fill_colors)))])
 
 st.plotly_chart(fig, use_container_width=True)
 
+# grouped feeding info
+st.plotly_chart(grouped_feeding_info_table(nursing), use_container_width=True)
+
+st.plotly_chart(grouped_feeding_histogram(nursing, 72), use_container_width=True)
+
+# daily diaper info
+st.plotly_chart(diaper_info_table(diapers), use_container_width=True)
 
 # lets make a time history of some of our stats for a line plot
 df1 = nursing.groupby('Adjusted_Date').agg({
@@ -47,7 +55,7 @@ df = pd.merge(df1, df2, on='Adjusted_Date', how='outer')
 df = df.rename(columns={'Minutes': 'Feeding', 'Type': 'Diapers'})
 
 # only care about the last week
-df = df[-7:]
+df = df[-7:-1]
 
 fig = px.line(df.reset_index(), x='Adjusted_Date', y=['Feeding', 'Diapers'], title='Food & Poop', color_discrete_sequence=['blue', 'red'])
 
