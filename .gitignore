@@ -1,3 +1,8 @@
 **/__pycache__
 .secrets
 .venv
+*.jpg
+*.onnx
+*.tar.gz
+.env
+.logs

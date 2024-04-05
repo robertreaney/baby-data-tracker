@@ -5,11 +5,59 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Streamlit",
+            "name": "Python Debugger: Current File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+        },
+        {
+            "name": "OCR",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "src/ocr/src/main.py",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "UI",
             "type": "debugpy",
             "request": "launch",
             "module": "streamlit",
-            "args": ["run", "src/app.py"]
+            "cwd": "src/ui/src",
+            "args": [
+                "run",
+                "app.py"
+            ]
+        },
+        {
+            "name": "Compose - OCR",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/src/ocr/src",
+                    "remoteRoot": "/wd"
+                }
+            ]
+        },
+        {
+            "name": "Compose - UI",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5677
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/src/ui",
+                    "remoteRoot": "/wd"
+                }
+            ]
         }
     ]
 }
