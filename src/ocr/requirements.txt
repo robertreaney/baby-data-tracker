@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+pydantic
+python-multipart
+pdf2image
+numpy
+matplotlib

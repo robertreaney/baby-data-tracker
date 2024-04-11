@@ -1,9 +1,31 @@
 #!/usr/bin/make
 
-.PHONY: all
+DEV=docker compose -f compose.dev.yml
+PROD=docker compose -f compose.dev.yml -f compose.prod.yml
 
-all:
-	@docker compose -f compose.dev.yml up --build
+.PHONY: all dev prod down refresh clean
+
+all: dev
+
+dev:
+	@echo "Starting up DEV mode."
+	$(DEV) up -d --build
 
 down:
-	@docker compose -f compose.dev.yml down
+	@echo "Shutting down..."
+	$(PROD) down
+
+prod:
+	@echo "Starting up PROD services..."
+	$(PROD) up -d --build
+
+.PHONY: refresh
+refresh:
+	$(PROD) down
+	$(DEV) up -d --build --remove-orphans
+
+.PHONY: clean
+clean:
+	@echo "Cleaning up services..."
+	$(PROD) down -v
+	sudo rm -rf .logs .volumnes

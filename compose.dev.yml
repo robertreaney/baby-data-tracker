@@ -1,12 +1,32 @@
-version: "3"
+version: '3'
 
 services:
-
-  frontend:
-    build: src
-    command: streamlit run app.py
+  ui:
+    build: src/ui
+    environment:
+      - LOGLEVEL=INFO
     ports:
       - 8501:8501
+      - 5677:5677
     volumes:
-      - ./src:/wd
+      - ./src/ui/src:/wd
       - ./.secrets:/wd/.secrets
+      - ./.logs:/var/log/ui
+    command: >
+      sh -c "echo [DEV] Running UI &&
+        pip install debugpy -t /tmp &&
+        python /tmp/debugpy --wait-for-client --listen 0.0.0.0:5677 -m streamlit run app.py > /var/log/ui/streamlit.log 2>&1"
+        
+  ocr:
+    build: src/ocr
+    environment:
+      - LOGLEVEL=DEBUG
+    volumes:
+      - ./src/ocr/src:/wd
+      - ./.logs:/var/log/ocr
+    ports:
+      - 8080:8080
+      - 5678:5678
+    command: >
+      sh -c "echo [DEV] Running OCR &&
+        pip install debugpy -t /tmp && python /tmp/debugpy --wait-for-client --listen 0.0.0.0:5678 -m uvicorn main:app --host 0.0.0.0 --port 8080 --reload > /var/log/ocr/fastapi.log 2>&1"
